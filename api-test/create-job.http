@@ -1,0 +1,22 @@
+POST http://localhost:8080/jobs
+content-type: application/json
+
+{
+  "title": "Software Engineer III (Go)",
+  "description": "Build APIs with Go",
+  "location": "United States",
+  "salary": "100k",
+  "duties": [
+    "Strong knowledge of kubernetes",
+    "Experience with PostgreSQL",
+    "Develops and maintains complex software"
+  ],
+  "url": "https://www.prizepicks.com/position?gh_jid=6316902003"
+}
+
+
+
+
+
+
+
