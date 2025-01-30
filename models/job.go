@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/Ademayowa/rest-api-demo/db"
 )
@@ -53,4 +54,61 @@ func (job Job) Save() error {
 	job.ID = id
 
 	return err
+}
+
+// Get all jobs (with optional filtering)
+func GetAllJobs(filterTitle string) ([]Job, int, error) {
+	query := "SELECT * FROM jobs WHERE 1=1"
+	args := []interface{}{}
+
+	if strings.TrimSpace(filterTitle) != "" {
+		query += " title LIKE ?"
+		args = append(args, "%"+strings.ToLower(filterTitle)+"%")
+	}
+
+	// Count total jobs that matches the filter
+	countQuery := "SELECT COUNT(*) FROM (" + query + ") AS count_query"
+
+	var total int
+	err := db.DB.QueryRow(countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Fetching all jobs with filter
+	rows, err := db.DB.Query(query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var jobs []Job
+
+	// Parse rows into the Job struct
+	for rows.Next() {
+		var job Job
+		var dutiesJSON string
+
+		err := rows.Scan(
+			&job.ID,
+			&job.Title,
+			&job.Description,
+			&job.Location,
+			&job.Salary,
+			&dutiesJSON,
+			&job.Url,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// Convert duties field back to []string
+		err = json.Unmarshal([]byte(dutiesJSON), &job.Duties)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		jobs = append(jobs, job)
+	}
+
+	return jobs, total, err
 }
