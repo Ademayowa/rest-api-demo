@@ -66,7 +66,7 @@ func GetAllJobs(filterTitle string) ([]Job, int, error) {
 		args = append(args, "%"+strings.ToLower(filterTitle)+"%")
 	}
 
-	// Count total jobs that matches the filter
+	// Count total jobs that matches the filter from the database
 	countQuery := "SELECT COUNT(*) FROM (" + query + ") AS count_query"
 
 	var total int
@@ -75,7 +75,7 @@ func GetAllJobs(filterTitle string) ([]Job, int, error) {
 		return nil, 0, err
 	}
 
-	// Fetching all jobs with filter
+	// Fetch all jobs with filter from the database
 	rows, err := db.DB.Query(query, args...)
 	if err != nil {
 		return nil, 0, err
@@ -83,7 +83,6 @@ func GetAllJobs(filterTitle string) ([]Job, int, error) {
 
 	var jobs []Job
 
-	// Parse rows into the Job struct
 	for rows.Next() {
 		var job Job
 		var dutiesJSON string
