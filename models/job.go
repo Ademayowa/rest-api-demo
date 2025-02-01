@@ -113,7 +113,7 @@ func GetAllJobs(filterTitle string) ([]Job, int, error) {
 }
 
 // Get a single job
-func GetJobByID(id int) (*Job, error) {
+func GetJobByID(id int64) (*Job, error) {
 	query := "SELECT * FROM jobs WHERE id = ?"
 	row := db.DB.QueryRow(query, id)
 

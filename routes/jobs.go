@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Ademayowa/rest-api-demo/models"
 	"github.com/gin-gonic/gin"
@@ -33,4 +34,19 @@ func getJobs(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"jobs": jobs, "total": total})
+}
+
+// Fetch a single job
+func getJob(context *gin.Context) {
+	// Convert the id into a string
+	jobId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	job, err := models.GetJobByID(jobId)
+
+	context.JSON(http.StatusOK, job)
 }
