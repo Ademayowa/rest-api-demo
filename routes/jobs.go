@@ -14,33 +14,42 @@ func createJob(context *gin.Context) {
 
 	err := context.ShouldBindJSON(&job)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse job" + err.Error()})
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not create job",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	job.Save()
-	context.JSON(http.StatusCreated, gin.H{"message": "job created", "job": job})
+	context.JSON(http.StatusCreated, gin.H{"message": "job created", "data": job})
 }
 
 // Fetch all jobs
 func getJobs(context *gin.Context) {
-	// Extract query parameter
+	// Extract the query parameter
 	filterTitle := context.Query("title")
 
 	jobs, total, err := models.GetAllJobs(filterTitle)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not fetch all jobs",
+			"error":   err.Error(),
+		})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"jobs": jobs, "total": total})
+	context.JSON(http.StatusOK, gin.H{
+		"message": "jobs fetch successfully",
+		"data":    jobs,
+		"total":   total,
+	})
 }
 
 // Fetch a single job
 func getJob(context *gin.Context) {
-	// Convert the id into a string
+	// Extract the id from the URL & convert to int64
 	jobId, err := strconv.ParseInt(context.Param("id"), 10, 64)
-
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"message": "could not parse job id",
