@@ -141,3 +141,18 @@ func GetJobByID(id int64) (*Job, error) {
 
 	return &job, nil
 }
+
+// Delete job
+func (job Job) Delete() error {
+	query := "SELECT * FROM jobs WHERE id =?"
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(job.ID)
+
+	return err
+}
