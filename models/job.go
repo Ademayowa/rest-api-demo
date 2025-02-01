@@ -111,3 +111,33 @@ func GetAllJobs(filterTitle string) ([]Job, int, error) {
 
 	return jobs, total, err
 }
+
+// Get a single job
+func GetJobByID(id int) (*Job, error) {
+	query := "SELECT * FROM jobs WHERE id = ?"
+	row := db.DB.QueryRow(query, id)
+
+	var job Job
+	var dutiesJSON string
+
+	err := row.Scan(
+		&job.ID,
+		&job.Title,
+		&job.Description,
+		&job.Location,
+		&job.Salary,
+		&dutiesJSON,
+		&job.Url,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert Duties field from JSON to []string
+	err = json.Unmarshal([]byte(dutiesJSON), &job.Duties)
+	if err != nil {
+		return nil, err
+	}
+
+	return &job, nil
+}
