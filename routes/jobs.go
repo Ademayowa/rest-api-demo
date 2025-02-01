@@ -51,7 +51,7 @@ func getJob(context *gin.Context) {
 
 	job, err := models.GetJobByID(jobId)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "could not fetch job",
 			"error":   err.Error(),
 		})
