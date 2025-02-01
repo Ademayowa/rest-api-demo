@@ -144,7 +144,7 @@ func GetJobByID(id int64) (*Job, error) {
 
 // Delete job
 func (job Job) Delete() error {
-	query := "SELECT * FROM jobs WHERE id =?"
+	query := "DELETE FROM jobs WHERE id =?"
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
