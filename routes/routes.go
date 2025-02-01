@@ -9,4 +9,5 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/jobs", createJob)
 	server.GET("/jobs", getJobs)
 	server.GET("/jobs/:id", getJob)
+	server.DELETE("/jobs/:id", deleteJob)
 }
