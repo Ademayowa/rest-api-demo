@@ -47,6 +47,10 @@ func getJob(context *gin.Context) {
 	}
 
 	job, err := models.GetJobByID(jobId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	context.JSON(http.StatusOK, job)
 }
