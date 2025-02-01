@@ -42,15 +42,21 @@ func getJob(context *gin.Context) {
 	jobId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not parse job id",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	job, err := models.GetJobByID(jobId)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not fetch job",
+			"error":   err.Error(),
+		})
 		return
 	}
 
-	context.JSON(http.StatusOK, job)
+	context.JSON(http.StatusOK, gin.H{"message": "job fetch successfully", "data": job})
 }
