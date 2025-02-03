@@ -158,7 +158,7 @@ func (job Job) Delete() error {
 }
 
 // Update a job
-func updateJobByID(id int, updatedJob Job, dutiesJSON string) error {
+func UpdateJobByID(id int64, updatedJob Job, dutiesJSON string) error {
 	query := `
 		UPDATE jobs
 		SET title = ?, description = ?, location = ?, salary = ?, duties = ?, url = ?

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -101,4 +102,50 @@ func deleteJob(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"message": "job deleted successfully"})
+}
+
+func updateJob(context *gin.Context) {
+	// Parse job ID into the URL & convert to int64
+	jobId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid job id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Parse the request body to get the updated job data
+	var updatedJob models.Job
+
+	err = context.ShouldBindJSON(&updatedJob)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid request body",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Serialize the Duties field to JSON for database storage
+	dutiesJSON, err := json.Marshal(updatedJob.Duties)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error processing duties field",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// Update job in the database
+	err = models.UpdateJobByID(jobId, updatedJob, string(dutiesJSON))
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "could not update job",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "job updated successfully"})
 }
