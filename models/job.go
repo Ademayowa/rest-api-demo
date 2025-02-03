@@ -156,3 +156,23 @@ func (job Job) Delete() error {
 
 	return err
 }
+
+// Update a job
+func updateJobByID(id int, updatedJob Job, dutiesJSON string) error {
+	query := `
+		UPDATE jobs
+		SET title = ?, description = ?, location = ?, salary = ?, duties = ?, url = ?
+		WHERE id = ?
+	`
+	_, err := db.DB.Exec(query,
+		updatedJob.Title,
+		updatedJob.Description,
+		updatedJob.Location,
+		updatedJob.Salary,
+		dutiesJSON,
+		updatedJob.Url,
+		id,
+	)
+
+	return err
+}
