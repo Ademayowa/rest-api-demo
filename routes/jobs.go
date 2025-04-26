@@ -48,3 +48,22 @@ func getJob(context *gin.Context) {
 
 	context.JSON(http.StatusOK, job)
 }
+
+// Delete a job
+func deleteJob(context *gin.Context) {
+	jobId := context.Param("id")
+
+	job, err := models.GetJobByID(jobId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch job"})
+		return
+	}
+
+	err = job.Delete()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "could not delete job"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "job deleted"})
+}
