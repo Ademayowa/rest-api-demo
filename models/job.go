@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -53,4 +54,50 @@ func (job *Job) Save() error {
 		job.CreatedAt,
 	)
 	return err
+}
+
+// Get all jobs (with optional filtering)
+func GetAllJobs(filterTitle string) ([]Job, error) {
+	query := "SELECT * FROM jobs WHERE 1=1"
+	args := []interface{}{}
+
+	// Filter jobs by the title
+	if strings.TrimSpace(filterTitle) != "" {
+		query += " AND LOWER(title) LIKE ?"
+		args = append(args, "%"+strings.ToLower(filterTitle)+"%")
+	}
+
+	// Fetch jobs
+	rows, err := db.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var jobs []Job
+
+	for rows.Next() {
+		var job Job
+		var dutiesJSON string
+		err := rows.Scan(
+			&job.ID,
+			&job.Title,
+			&job.Description,
+			&job.Location,
+			&job.Salary,
+			&dutiesJSON,
+			&job.Url,
+			&job.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		// Convert Duties field to []string
+		if err := json.Unmarshal([]byte(dutiesJSON), &job.Duties); err != nil {
+			return nil, err
+		}
+
+		jobs = append(jobs, job)
+	}
+	return jobs, nil
 }
