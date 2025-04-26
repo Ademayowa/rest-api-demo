@@ -35,3 +35,16 @@ func getJobs(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"jobs": jobs})
 }
+
+// Fetch a single job
+func getJob(context *gin.Context) {
+	jobId := context.Param("id")
+
+	job, err := models.GetJobByID(jobId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch job"})
+		return
+	}
+
+	context.JSON(http.StatusOK, job)
+}
