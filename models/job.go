@@ -101,3 +101,31 @@ func GetAllJobs(filterTitle string) ([]Job, error) {
 	}
 	return jobs, nil
 }
+
+// Get a job by ID
+func GetJobByID(id string) (Job, error) {
+	var job Job
+	var dutiesJSON string
+
+	query := "SELECT * FROM jobs WHERE id =?"
+	row := db.DB.QueryRow(query, id)
+	err := row.Scan(
+		&job.ID,
+		&job.Title,
+		&job.Description,
+		&job.Location,
+		&job.Salary, &dutiesJSON,
+		&job.Url,
+		&job.CreatedAt,
+	)
+	if err != nil {
+		return job, err
+	}
+	// Convert Duties field from JSON to []string
+	err = json.Unmarshal([]byte(dutiesJSON), &job.Duties)
+	if err != nil {
+		return job, err
+	}
+
+	return job, nil
+}
