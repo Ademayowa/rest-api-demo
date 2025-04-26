@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/Ademayowa/rest-api-demo/models"
@@ -66,4 +67,31 @@ func deleteJob(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"message": "job deleted"})
+}
+
+// Update a job
+func updateJob(context *gin.Context) {
+	// Extract job ID from the URL
+	jobId := context.Param("id")
+
+	// Parse the request body to get the updated job data
+	var updatedJob models.Job
+	if err := context.ShouldBindJSON(&updatedJob); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+	// Convert Duties field to JSON
+	dutiesJSON, err := json.Marshal(updatedJob.Duties)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "failure at duties field"})
+		return
+	}
+	// Update job in the database
+	err = models.UpdateJobByID(jobId, updatedJob, string(dutiesJSON))
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "could not update job"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "job updated"})
 }

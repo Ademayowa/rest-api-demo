@@ -10,4 +10,5 @@ func RegisterRoutes(router *gin.Engine) {
 	router.GET("/jobs", getJobs)
 	router.GET("/jobs/:id", getJob)
 	router.DELETE("/jobs/:id", deleteJob)
+	router.PUT("/jobs/:id", updateJob)
 }
