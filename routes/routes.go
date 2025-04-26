@@ -7,4 +7,5 @@ import (
 func RegisterRoutes(router *gin.Engine) {
 	// Define routes
 	router.POST("/jobs", createJob)
+	router.GET("/jobs", getJobs)
 }
